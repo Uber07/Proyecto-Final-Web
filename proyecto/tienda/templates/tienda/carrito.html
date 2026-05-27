@@ -1,0 +1,60 @@
+{% extends 'tienda/base.html' %}
+{% block content %}
+<h1>Tu Carrito</h1>
+
+{% if items %}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 70px;" class="text-center">Img</th>
+                    <th>Producto</th>
+                    <th class="text-center">Cantidad</th>
+                    <th class="text-right">Subtotal</th>
+                    <th class="text-center">Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td class="text-center">
+                        <div class="cart-img-container">
+                            {% if item.producto.imagen %}
+                                <img src="{{ item.producto.imagen.url }}" alt="{{ item.producto.nombre }}">
+                            {% else %}
+                                <div class="no-img-cart"><span>Sin Img</span></div>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td><strong>{{ item.producto.nombre }}</strong></td>
+                    <td class="text-center">
+                        <span class="cantidad-badge">{{ item.cantidad }}</span>
+                    </td>
+                    <td class="text-right precio">${{ item.subtotal }}</td>
+                    <td class="actions-cell">
+                        <a href="{% url 'tienda:quitar_uno_del_carrito' item.id %}" class="btn-icon btn-warning" title="Quitar uno">➖</a>
+                        <a href="{% url 'tienda:retirar_del_carrito' item.id %}" class="btn-icon btn-danger" title="Retirar todo">🗑️</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="cart-summary">
+        <div class="total-box">
+            <span>Total a Pagar:</span>
+            <span class="total-amount">${{ total }}</span>
+        </div>
+        <div class="cart-actions">
+            <a href="{% url 'tienda:catalogo' %}" class="btn-cyan">Volver al catálogo</a>
+            <a href="{% url 'tienda:crear_pedido' %}" class="btn btn-checkout">Realizar Pedido</a>
+        </div>
+    </div>
+{% else %}
+    <div class="empty-cart">
+        <p>Tu carrito está vacío.</p>
+        <a href="{% url 'tienda:catalogo' %}" class="btn">Explorar Catálogo</a>
+    </div>
+{% endif %}
+{% endblock %}

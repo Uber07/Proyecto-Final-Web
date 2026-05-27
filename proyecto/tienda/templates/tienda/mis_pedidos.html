@@ -1,0 +1,60 @@
+{% extends 'tienda/base.html' %}
+{% block content %}
+<h1>Mis Pedidos</h1>
+
+{% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <p class="{{ message.tags }}"><strong>{{ message }}</strong></p>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% for pedido in pedidos %}
+    <div class="pedido">
+        <h3>Pedido #{{ pedido.id }} — {{ pedido.fecha|date:"d/m/Y H:i" }}</h3>
+        <p>Estado: <strong>{{ pedido.get_estado_display }}</strong></p>
+        
+        <ul>
+            {% for detalle in pedido.detalles.all %}
+                <li>
+                    <div class="pedido-item-flex">
+                        <div class="pedido-img-container">
+                            {% if detalle.producto.imagen %}
+                                <img src="{{ detalle.producto.imagen.url }}" alt="{{ detalle.producto.nombre }}">
+                            {% else %}
+                                <div class="no-img-pedido"><span>Sin Img</span></div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="pedido-item-info">
+                            <span class="producto-nombre">{{ detalle.producto.nombre }}</span>
+                            <span class="producto-cantidad">× {{ detalle.cantidad }}</span>
+                            <span class="producto-unitario">(${{ detalle.precio_unitario }} c/u)</span>
+                        </div>
+                        
+                        <div class="pedido-item-subtotal">
+                            <strong>${{ detalle.subtotal }}</strong>
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+        
+        <div class="pedido-footer">
+            <div class="pedido-total-box">
+                <span>Total:</span>
+                <strong>${{ pedido.total }}</strong>
+            </div>
+
+            {% if pedido.estado == 'pendiente' %}
+                <a href="{% url 'tienda:cancelar_pedido' pedido.id %}" 
+                   class="btn-cyan" 
+                   onclick="return confirm('¿Cancelar este pedido?')">Cancelar pedido</a>
+            {% endif %}
+        </div>
+    </div>
+{% empty %}
+    <p>Aún no has realizado ningún pedido.</p>
+{% endfor %}
+{% endblock %}

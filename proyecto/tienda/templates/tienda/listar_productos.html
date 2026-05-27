@@ -1,0 +1,25 @@
+{% extends 'tienda/base.html' %}
+{% block content %}
+<h1>Gestión de Productos</h1>
+<a href="{% url 'tienda:admin_crear_producto' %}">➕ Nuevo Producto</a>
+<table border="1">
+    <tr><th>Imagen</th><th>Nombre</th><th>Precio</th><th>Stock</th><th>Acciones</th></tr>
+    {% for p in productos %}
+    <tr>
+        <td>
+            {% if p.imagen %}<img src="{{ p.imagen.url }}" width="50">{% endif %}
+        </td>
+        <td>{{ p.nombre }}</td>
+        <td>${{ p.precio }}</td>
+        <td>{{ p.stock }}</td>
+        <td>
+            <a href="{% url 'tienda:admin_editar_producto' p.id %}">✏️ Editar</a>
+            <a href="{% url 'tienda:admin_eliminar_producto' p.id %}"
+               onclick="return confirm('¿Eliminar este producto?')">🗑️ Eliminar</a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5">No hay productos.</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

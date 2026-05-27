@@ -1,0 +1,15 @@
+{% extends 'tienda/base.html' %}
+{% block content %}
+<h1>Cambiar estado del Pedido #{{ pedido.id }}</h1>
+<p>Estado actual: {{ pedido.get_estado_display }}</p>
+<form method="post">
+    {% csrf_token %}
+    <label for="estado">Nuevo estado:</label>
+    <select name="estado" id="estado">
+        {% for value, label in estados %}
+            <option value="{{ value }}" {% if pedido.estado == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Actualizar</button>
+</form>
+{% endblock %}

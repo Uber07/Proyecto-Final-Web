@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manga Store</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'tienda/css/base.css' %}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="{% url 'tienda:catalogo' %}" class="nav-logo">MangaStore</a>
+            <a href="{% url 'tienda:catalogo' %}" class="nav-item">Catálogo</a>
+        </div>
+
+        <div class="nav-right">
+            {% if user.is_authenticated %}
+                <span class="nav-greeting">Hola, {{ user.username }}</span>
+                
+                {% if user.is_staff %}
+                    <a href="{% url 'tienda:admin_listar_pedidos' %}" class="nav-item">Pedidos (Admin)</a>
+                    <a href="{% url 'tienda:admin_listar_productos' %}" class="nav-item">Productos (Admin)</a>
+                    <a href="{% url 'tienda:admin_listar_categorias' %}" class="nav-item">Categorías (Admin)</a>
+                    <a href="{% url 'tienda:ver_carrito' %}" class="nav-item">Carrito</a>
+                    <a href="{% url 'tienda:mis_pedidos' %}" class="nav-item">Mis Pedidos</a>
+                {% else %}
+                    <a href="{% url 'tienda:ver_carrito' %}" class="nav-item">Carrito</a>
+                    <a href="{% url 'tienda:mis_pedidos' %}" class="nav-item">Mis Pedidos</a>
+                {% endif %}
+                
+                <a href="{% url 'tienda:logout' %}" class="nav-item btn-nav-outline">Cerrar sesión</a>
+            {% else %}
+                <a href="{% url 'tienda:login' %}" class="nav-item">Iniciar Sesión</a>
+                <a href="{% url 'tienda:registro' %}" class="nav-item btn-nav-solid">Registrarse</a>
+            {% endif %}
+        </div>
+    </nav>
+    
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const forms = document.querySelectorAll('.add-to-cart-form');
+        forms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(form);
+                const url = form.getAttribute('action');
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const msg = document.createElement('div');
+                        msg.classList.add('toast-success');
+                        msg.textContent = data.message;
+                        document.body.appendChild(msg);
+                        
+                        setTimeout(() => {
+                            msg.style.animation = 'toastSlideIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) reverse forwards';
+                            setTimeout(() => msg.remove(), 350); 
+                        }, 2500);
+
+                        const cartCount = document.getElementById('cart-count');
+                        if (cartCount) {
+                            cartCount.textContent = data.total_unidades;
+                        }
+                    }
+                });
+            });
+        });
+    });
+    </script>
+</body>
+</html>

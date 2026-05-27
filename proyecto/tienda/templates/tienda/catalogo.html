@@ -1,0 +1,53 @@
+{% extends 'tienda/base.html' %}
+{% block content %}
+<h1>Catálogo de Figuras y Manga</h1>
+
+<div class="filtros">
+    <form method="get">
+        <input type="text" name="q" placeholder="Buscar..." value="{{ busqueda }}">
+        <select name="categoria">
+            <option value="">Todas las categorías</option>
+            {% for cat in categorias %}
+                <option value="{{ cat.id }}" {% if categoria_seleccionada == cat.id %}selected{% endif %}>
+                    {{ cat.nombre }}
+                </option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn-cyan">Filtrar</button>
+    </form>
+</div>
+
+<div class="catalogo-grid">
+    {% for producto in productos %}
+        <div class="producto">
+            
+            <div class="producto-img-container">
+                {% if producto.imagen %}
+                    <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
+                {% else %}
+                    <div class="no-img"><span>Sin Imagen</span></div>
+                {% endif %}
+            </div>
+            
+            <div class="producto-info">
+                <h3>{{ producto.nombre }}</h3>
+                <p class="desc">{{ producto.descripcion|truncatechars:80 }}</p>
+                
+                <div class="producto-meta">
+                    <span class="precio">${{ producto.precio }}</span>
+                    <span class="stock">Stock: {{ producto.stock }}</span>
+                </div>
+            </div>
+            
+            <form class="add-to-cart-form" method="post" action="{% url 'tienda:agregar_al_carrito' producto.id %}">
+                {% csrf_token %}
+                <input type="number" name="cantidad" value="1" min="1">
+                <button type="submit">Agregar</button>
+            </form>
+            
+        </div>
+    {% empty %}
+        <p>No se encontraron productos.</p>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'tienda/base.html' %}
+{% block content %}
+<h1>Pedidos (Administrador)</h1>
+<table border="1">
+    <tr><th>ID</th><th>Usuario</th><th>Fecha</th><th>Estado</th><th>Total</th><th>Acción</th></tr>
+    {% for p in pedidos %}
+    <tr>
+        <td>{{ p.id }}</td>
+        <td>{{ p.usuario.username }}</td>
+        <td>{{ p.fecha|date:"d/m/Y H:i" }}</td>
+        <td>{{ p.get_estado_display }}</td>
+        <td>${{ p.total }}</td>
+        <td>
+            <a href="{% url 'tienda:admin_cambiar_estado' p.id %}">Cambiar estado</a> |
+            <a href="{% url 'tienda:admin_eliminar_pedido' p.id %}"
+            onclick="return confirm('¿Eliminar este pedido? Esta acción no se puede deshacer.')">Eliminar</a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6">No hay pedidos.</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

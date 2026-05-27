@@ -1,0 +1,9 @@
+{% extends 'tienda/base.html' %}
+{% block content %}
+<h1>Editar Categoría</h1>
+<form method="post">
+    {% csrf_token %}
+    <input type="text" name="nombre" value="{{ categoria.nombre }}" required>
+    <button type="submit">Actualizar</button>
+</form>
+{% endblock %}
